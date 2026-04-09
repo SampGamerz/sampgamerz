@@ -126,27 +126,34 @@ header {
 <div class="footer">© 2026 Samp Gamerz</div>
 
 <script>
-const username = "samp_gamerz";
+const channelID = "UC0D3xV9kQ2V9gR8nQdH6w5A";
+
 const container = document.getElementById("videoContainer");
 
-// Generate thumbnails (12 videos)
-let output = "";
+// Fetch videos using RSS2JSON (fixed method)
+fetch(`https://api.rss2json.com/v1/api.json?rss_url=https://www.youtube.com/feeds/videos.xml?channel_id=${channelID}`)
+.then(res => res.json())
+.then(data => {
+  let output = "";
 
-for (let i = 1; i <= 12; i++) {
-  output += `
-    <div class="video" onclick="playVideo(${i})">
-      <img src="https://img.youtube.com/vi/${username}/${i}.jpg" onerror="this.src='https://img.youtube.com/vi/VIDEO_ID_${i}/hqdefault.jpg'">
-    </div>
-  `;
-}
+  data.items.slice(0, 8).forEach(video => {
+    const videoId = video.link.split("v=")[1];
 
-container.innerHTML = output;
+    output += `
+      <div class="video" onclick="playVideo('${videoId}')">
+        <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg">
+      </div>
+    `;
+  });
+
+  container.innerHTML = output;
+});
 
 // Play video
-function playVideo(index) {
+function playVideo(id) {
   document.getElementById("player").style.display = "flex";
   document.getElementById("videoFrame").src =
-    "https://www.youtube.com/embed?listType=user_uploads&list=" + username + "&index=" + index;
+    "https://www.youtube.com/embed/" + id;
 }
 
 // Close player
